@@ -26,6 +26,12 @@ export default function BrandCompassForm({ onTrigger, onFetchStatus, isLoading }
   return (
     <div className="p-6 bg-gray-900 rounded-lg">
       <h2 className="text-2xl font-bold mb-4">Brand Compass Management</h2>
+      <div className="mb-4 p-4 bg-gray-800 rounded-lg">
+        <p className="text-sm text-gray-400">
+          Note: The Brand Compass process may take several minutes to complete. You can check its status using the "Get Status" button.
+          {/* Add any other helpful information here */}
+        </p>
+      </div>
       <form className="space-y-4">
         <div>
           <label htmlFor="tenantId" className="block text-sm font-medium mb-1">
@@ -74,9 +80,10 @@ export default function BrandCompassForm({ onTrigger, onFetchStatus, isLoading }
             type="button"
             onClick={handleTrigger}
             className="flex-1 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 disabled:opacity-50"
-            disabled={isLoading || !tenantId || !brandId || !apiKey}
+            // disabled={isLoading || !tenantId || !brandId || !apiKey}
+            disabled={true}
           >
-            {isLoading ? 'Loading...' : 'Trigger Compass'}
+            {isLoading ? 'Loading...' : 'Trigger Compass (disabled)'}
           </button>
           <button
             type="button"
@@ -84,7 +91,7 @@ export default function BrandCompassForm({ onTrigger, onFetchStatus, isLoading }
             className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
             disabled={isLoading || !tenantId || !brandId || !apiKey}
           >
-            Get Status
+            {isLoading ? 'Loading...' : 'Get Status'}
           </button>
         </div>
       </form>

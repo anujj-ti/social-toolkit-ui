@@ -240,7 +240,7 @@ export default function BrandCompassManagement() {
                   )}
                 </div>
 
-                {compass.status === 'PROCESSING' && (
+                {compass.status === 'PROCESSING' && compass.progress && (
                   <div className="mt-4">
                     <div className="flex justify-between text-sm mb-1">
                       <span>Progress: {compass.progress.percent_complete}%</span>
@@ -254,9 +254,23 @@ export default function BrandCompassManagement() {
                     </div>
                   </div>
                 )}
+
+                {compass.status === 'PROCESSING' && !compass.progress && (
+                  <div className="mt-4">
+                    <div className="flex justify-between text-sm mb-1">
+                      <span>Processing...</span>
+                    </div>
+                    <div className="w-full bg-gray-700 rounded-full h-2">
+                      <div
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-500 animate-pulse"
+                        style={{ width: '100%' }}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {compass.generations.length > 0 && (
+              {compass.generations.length > 0 ? (
                 <div>
                   <h3 className="text-lg font-bold mb-2">Generations</h3>
                   {viewMode === 'formatted' ? (
@@ -266,6 +280,16 @@ export default function BrandCompassManagement() {
                       {JSON.stringify(compass.generations, null, 2)}
                     </pre>
                   )}
+                </div>
+              ) : (
+                <div className="bg-gray-800 p-4 rounded">
+                  <p className="text-gray-400">
+                    {compass.status === 'PROCESSING' 
+                      ? 'Generations will appear here once they start being processed...'
+                      : compass.status === 'COMPLETED'
+                      ? 'No generations were produced for this compass run.'
+                      : 'No generations available.'}
+                  </p>
                 </div>
               )}
             </div>
