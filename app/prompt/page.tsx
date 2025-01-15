@@ -6,7 +6,7 @@ import PromptForm from '@/app/components/PromptForm';
 import { Prompt } from '@/types';
 
 export default function PromptManagement() {
-  const [prompt, setPrompt] = useState<Prompt | null>(null);
+  const [prompts, setPrompts] = useState<Prompt[] | null>(null);
   const [error, setError] = useState<string>('');
 
   const handlePromptFetch = async (tenantId: string, promptId: string, apiKey: string) => {
@@ -18,11 +18,28 @@ export default function PromptManagement() {
         throw new Error(data.error || 'Failed to fetch prompt');
       }
       
-      setPrompt(data);
+      setPrompts([data]);
       setError('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
-      setPrompt(null);
+      setPrompts(null);
+    }
+  };
+
+  const handleListAll = async (tenantId: string, apiKey: string) => {
+    try {
+      const response = await fetch(`/api/prompt/list?tenantId=${tenantId}&apiKey=${apiKey}`);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch prompts');
+      }
+      
+      setPrompts(data);
+      setError('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      setPrompts(null);
     }
   };
 
@@ -32,7 +49,7 @@ export default function PromptManagement() {
         <h1 className="text-4xl font-bold mb-6">Prompt Management</h1>
         
         <div className="space-y-6">
-          <PromptForm onSubmit={handlePromptFetch} />
+          <PromptForm onSubmit={handlePromptFetch} onListAll={handleListAll} />
           
           {error && (
             <div className="p-4 bg-red-900/50 border border-red-500 rounded-lg text-red-200">
@@ -40,11 +57,13 @@ export default function PromptManagement() {
             </div>
           )}
           
-          {prompt && (
+          {prompts && (
             <div className="p-6 bg-gray-900 rounded-lg">
-              <h2 className="text-xl font-bold mb-4">Prompt Details</h2>
+              <h2 className="text-xl font-bold mb-4">
+                {prompts.length > 1 ? 'All Prompts' : 'Prompt Details'}
+              </h2>
               <pre className="bg-gray-800 p-4 rounded overflow-auto">
-                {JSON.stringify(prompt, null, 2)}
+                {JSON.stringify(prompts, null, 2)}
               </pre>
             </div>
           )}
