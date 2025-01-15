@@ -30,9 +30,10 @@ export async function GET(request: Request) {
 
     const data = await response.json();
     return NextResponse.json(data);
-  } catch (_error) {
+  } catch (error) {
+    console.error('Source fetch error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch source data' },
+      { error: 'Failed to fetch source' },
       { status: 500 }
     );
   }

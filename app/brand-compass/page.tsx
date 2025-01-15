@@ -71,7 +71,7 @@ export default function BrandCompassManagement() {
               <div className="mb-6">
                 <h3 className="text-lg font-semibold text-purple-400 mb-2">Prompt</h3>
                 <div className="bg-gray-700/50 rounded-lg p-4 text-sm">
-                  {gen.prompt.split('\n').map((line, i) => {
+                  {gen.prompt.split('\n').map((line: string, i: number) => {
                     // Handle different types of lines
                     if (line.startsWith('##')) {
                       return (
@@ -110,7 +110,7 @@ export default function BrandCompassManagement() {
                 <h3 className="text-lg font-semibold text-purple-400 mb-2">Response</h3>
                 {gen.result?.status === 'success' && (
                   <div className="bg-gray-700/50 rounded-lg p-4">
-                    {gen.result.content.split('\n').map((line, i) => {
+                    {gen.result.content.split('\n').map((line: string, i: number) => {
                       // Handle different types of lines in the response
                       if (line.startsWith('##')) {
                         return (

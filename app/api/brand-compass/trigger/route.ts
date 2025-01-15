@@ -28,6 +28,7 @@ export async function POST(request: Request) {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
+    console.error('Brand compass trigger error:', error);
     return NextResponse.json(
       { error: 'Failed to trigger brand compass' },
       { status: 500 }

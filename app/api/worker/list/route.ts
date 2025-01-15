@@ -28,7 +28,8 @@ export async function GET(request: Request) {
 
     const data = await response.json();
     return NextResponse.json(data);
-  } catch (_error) {
+  } catch (error) {
+    console.error('Worker list error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch workers data' },
       { status: 500 }

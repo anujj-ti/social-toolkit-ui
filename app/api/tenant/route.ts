@@ -25,8 +25,9 @@ export async function GET(request: Request) {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
+    console.error('Tenant fetch error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch tenant data' },
+      { error: 'Failed to fetch tenant' },
       { status: 500 }
     );
   }

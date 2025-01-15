@@ -29,9 +29,10 @@ export async function GET(request: Request) {
 
     const data = await response.json();
     return NextResponse.json(data);
-  } catch (_error) {
+  } catch (error) {
+    console.error('Prompt fetch error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch prompt data' },
+      { error: 'Failed to fetch prompt' },
       { status: 500 }
     );
   }

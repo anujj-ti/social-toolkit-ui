@@ -28,7 +28,7 @@ export default function BrandCompassForm({ onTrigger, onFetchStatus, isLoading }
       <h2 className="text-2xl font-bold mb-4">Brand Compass Management</h2>
       <div className="mb-4 p-4 bg-gray-800 rounded-lg">
         <p className="text-sm text-gray-400">
-          Note: The Brand Compass process may take several minutes to complete. You can check its status using the "Get Status" button.
+          Note: The Brand Compass process may take several minutes to complete. You can check its status using the &quot;Get Status&quot; button.
           {/* Add any other helpful information here */}
         </p>
       </div>
