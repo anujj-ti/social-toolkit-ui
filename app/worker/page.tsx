@@ -6,7 +6,7 @@ import WorkerForm from '@/app/components/WorkerForm';
 import { Worker } from '@/types';
 
 export default function WorkerManagement() {
-  const [worker, setWorker] = useState<Worker | null>(null);
+  const [workers, setWorkers] = useState<Worker[] | null>(null);
   const [error, setError] = useState<string>('');
 
   const handleWorkerFetch = async (tenantId: string, workerId: string, apiKey: string) => {
@@ -18,11 +18,28 @@ export default function WorkerManagement() {
         throw new Error(data.error || 'Failed to fetch worker');
       }
       
-      setWorker(data);
+      setWorkers([data]);
       setError('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
-      setWorker(null);
+      setWorkers(null);
+    }
+  };
+
+  const handleListAll = async (tenantId: string, apiKey: string) => {
+    try {
+      const response = await fetch(`/api/worker/list?tenantId=${tenantId}&apiKey=${apiKey}`);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch workers');
+      }
+      
+      setWorkers(data);
+      setError('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      setWorkers(null);
     }
   };
 
@@ -32,7 +49,7 @@ export default function WorkerManagement() {
         <h1 className="text-4xl font-bold mb-6">Worker Management</h1>
         
         <div className="space-y-6">
-          <WorkerForm onSubmit={handleWorkerFetch} />
+          <WorkerForm onSubmit={handleWorkerFetch} onListAll={handleListAll} />
           
           {error && (
             <div className="p-4 bg-red-900/50 border border-red-500 rounded-lg text-red-200">
@@ -40,11 +57,13 @@ export default function WorkerManagement() {
             </div>
           )}
           
-          {worker && (
+          {workers && (
             <div className="p-6 bg-gray-900 rounded-lg">
-              <h2 className="text-xl font-bold mb-4">Worker Details</h2>
+              <h2 className="text-xl font-bold mb-4">
+                {workers.length > 1 ? 'All Workers' : 'Worker Details'}
+              </h2>
               <pre className="bg-gray-800 p-4 rounded overflow-auto">
-                {JSON.stringify(worker, null, 2)}
+                {JSON.stringify(workers, null, 2)}
               </pre>
             </div>
           )}
