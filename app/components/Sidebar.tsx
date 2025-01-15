@@ -7,6 +7,7 @@ const menuItems = [
   { icon: '🏠', label: 'Introduction', path: '/' },
   { icon: '👥', label: 'Tenant Management', path: '/tenant' },
   { icon: '🏢', label: 'Brand Management', path: '/brand' },
+  { icon: '🧭', label: 'Brand Compass', path: '/brand-compass' },
   { icon: '📄', label: 'Source Management', path: '/source' },
   { icon: '💭', label: 'Prompt Management', path: '/prompt' },
   { icon: '⚙️', label: 'Worker Management', path: '/worker' },

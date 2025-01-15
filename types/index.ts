@@ -68,4 +68,16 @@ export interface Source {
   status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
   url?: string;
   text?: string;
+}
+
+export interface BrandCompass {
+  status: 'PROCESSING' | 'COMPLETED' | 'FAILED';
+  generations: any[];
+  triggered_at: string;
+  completed_at: string | null;
+  progress: {
+    total_workers: number;
+    completed_workers: number;
+    percent_complete: number;
+  };
 } 
