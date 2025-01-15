@@ -9,6 +9,7 @@ export default function BrandCompassManagement() {
   const [compass, setCompass] = useState<BrandCompass | null>(null);
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const [viewMode, setViewMode] = useState<'formatted' | 'raw'>('formatted');
 
   const handleTrigger = async (tenantId: string, brandId: string, apiKey: string) => {
     try {
@@ -59,6 +60,113 @@ export default function BrandCompassManagement() {
     }
   };
 
+  const renderFormattedGenerations = () => {
+    if (!compass?.generations?.length) return null;
+
+    return (
+      <div className="space-y-6">
+        {compass.generations.map((gen, index) => (
+          <div key={index} className="bg-gray-800 rounded-lg p-6">
+            <div className="mb-4">
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-purple-400 mb-2">Prompt</h3>
+                <div className="bg-gray-700/50 rounded-lg p-4 text-sm">
+                  {gen.prompt.split('\n').map((line, i) => {
+                    // Handle different types of lines
+                    if (line.startsWith('##')) {
+                      return (
+                        <h4 key={i} className="text-lg font-semibold text-purple-300 mt-4 mb-2">
+                          {line.replace('##', '').trim()}
+                        </h4>
+                      );
+                    }
+                    if (line.startsWith('#')) {
+                      return (
+                        <h3 key={i} className="text-xl font-semibold text-purple-300 mt-4 mb-2">
+                          {line.replace('#', '').trim()}
+                        </h3>
+                      );
+                    }
+                    if (line.startsWith('- ')) {
+                      return (
+                        <li key={i} className="ml-4 mb-1">
+                          {line.replace('- ', '')}
+                        </li>
+                      );
+                    }
+                    if (line.trim() === '') {
+                      return <div key={i} className="h-2" />;
+                    }
+                    return (
+                      <p key={i} className="mb-2 last:mb-0">
+                        {line}
+                      </p>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="prose prose-invert max-w-none">
+                <h3 className="text-lg font-semibold text-purple-400 mb-2">Response</h3>
+                {gen.result?.status === 'success' && (
+                  <div className="bg-gray-700/50 rounded-lg p-4">
+                    {gen.result.content.split('\n').map((line, i) => {
+                      // Handle different types of lines in the response
+                      if (line.startsWith('##')) {
+                        return (
+                          <h4 key={i} className="text-lg font-semibold text-purple-300 mt-4 mb-2">
+                            {line.replace('##', '').trim()}
+                          </h4>
+                        );
+                      }
+                      if (line.startsWith('#')) {
+                        return (
+                          <h3 key={i} className="text-xl font-semibold text-purple-300 mt-4 mb-2">
+                            {line.replace('#', '').trim()}
+                          </h3>
+                        );
+                      }
+                      if (line.startsWith('- ')) {
+                        return (
+                          <li key={i} className="ml-4 mb-1">
+                            {line.replace('- ', '')}
+                          </li>
+                        );
+                      }
+                      if (line.trim() === '') {
+                        return <div key={i} className="h-2" />;
+                      }
+                      return (
+                        <p key={i} className="mb-2 last:mb-0">
+                          {line}
+                        </p>
+                      );
+                    })}
+                  </div>
+                )}
+                {gen.result?.status !== 'success' && (
+                  <div className="bg-red-900/50 border border-red-500 rounded-lg p-4 text-red-200">
+                    Generation failed
+                  </div>
+                )}
+              </div>
+              <div className="mt-4 text-sm text-gray-400">
+                <div>Status: {gen.status}</div>
+                <div>Created: {new Date(gen.created_at).toLocaleString()}</div>
+                {gen.updated_at && (
+                  <div>Updated: {new Date(gen.updated_at).toLocaleString()}</div>
+                )}
+                {gen.result?.metadata && (
+                  <div>Model: {gen.result.metadata.model}</div>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <Layout>
       <div className="max-w-4xl">
@@ -79,7 +187,33 @@ export default function BrandCompassManagement() {
           
           {compass && (
             <div className="p-6 bg-gray-900 rounded-lg space-y-4">
-              <h2 className="text-xl font-bold">Brand Compass Status</h2>
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-bold">Brand Compass Status</h2>
+                {compass.generations.length > 0 && (
+                  <div className="flex items-center gap-2 bg-gray-800 p-1 rounded-lg">
+                    <button
+                      onClick={() => setViewMode('formatted')}
+                      className={`px-3 py-1 rounded ${
+                        viewMode === 'formatted' 
+                          ? 'bg-purple-600 text-white' 
+                          : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      Formatted
+                    </button>
+                    <button
+                      onClick={() => setViewMode('raw')}
+                      className={`px-3 py-1 rounded ${
+                        viewMode === 'raw' 
+                          ? 'bg-purple-600 text-white' 
+                          : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      Raw JSON
+                    </button>
+                  </div>
+                )}
+              </div>
               
               <div className="bg-gray-800 p-4 rounded">
                 <div className="flex justify-between items-center mb-2">
@@ -125,9 +259,13 @@ export default function BrandCompassManagement() {
               {compass.generations.length > 0 && (
                 <div>
                   <h3 className="text-lg font-bold mb-2">Generations</h3>
-                  <pre className="bg-gray-800 p-4 rounded overflow-auto">
-                    {JSON.stringify(compass.generations, null, 2)}
-                  </pre>
+                  {viewMode === 'formatted' ? (
+                    renderFormattedGenerations()
+                  ) : (
+                    <pre className="bg-gray-800 p-4 rounded overflow-auto">
+                      {JSON.stringify(compass.generations, null, 2)}
+                    </pre>
+                  )}
                 </div>
               )}
             </div>
