@@ -52,9 +52,6 @@ export interface Worker {
   description: string;
   output_type: 'TEXT' | 'IMAGE' | 'VIDEO' | 'AUDIO';
   prompt: string;
-  settings?: {
-    [key: string]: any;
-  };
   created_at: string;
   updated_at: string;
 }

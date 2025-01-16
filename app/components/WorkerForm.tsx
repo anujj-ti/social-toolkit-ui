@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Worker } from '@/types';
 
 interface WorkerFormProps {
   onSubmit: (tenantId: string, workerId: string, apiKey: string) => Promise<void>;
@@ -17,7 +18,7 @@ interface WorkerFormProps {
     prompt: string;
   }) => Promise<void>;
   isLoading: boolean;
-  editWorker?: Worker;
+  editWorker?: Worker | null;
   onCancelEdit?: () => void;
   currentApiKey: string;
 }

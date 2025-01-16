@@ -12,7 +12,7 @@ export default function WorkerManagement() {
   const [viewMode, setViewMode] = useState<'formatted' | 'raw'>('formatted');
   const [expandedPrompts, setExpandedPrompts] = useState<Set<string>>(new Set());
   const [currentApiKey, setCurrentApiKey] = useState('');
-  const [editingWorker, setEditingWorker] = useState<Worker | null>(null);
+  const [editingWorker, setEditingWorker] = useState<Worker | undefined>(undefined);
 
   const handleWorkerFetch = async (tenantId: string, workerId: string, apiKey: string) => {
     setCurrentApiKey(apiKey);
@@ -216,7 +216,6 @@ export default function WorkerManagement() {
 
   const handleUpdate = async (worker: Worker) => {
     setEditingWorker(worker);
-    // Scroll to top smoothly
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -251,12 +250,16 @@ export default function WorkerManagement() {
         w.worker_id === workerId ? data : w
       ) || null);
       setError('');
-      setEditingWorker(null);  // Close edit form
+      setEditingWorker(undefined);  // Close edit form
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingWorker(undefined);
   };
 
   return (
@@ -272,7 +275,7 @@ export default function WorkerManagement() {
             onUpdate={handleUpdateSubmit}
             isLoading={isLoading}
             editWorker={editingWorker}
-            onCancelEdit={() => setEditingWorker(null)}
+            onCancelEdit={handleCancelEdit}
             currentApiKey={currentApiKey}
           />
           
