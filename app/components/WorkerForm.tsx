@@ -5,6 +5,7 @@ import { useState } from 'react';
 interface WorkerFormProps {
   onSubmit: (tenantId: string, workerId: string, apiKey: string) => Promise<void>;
   onListAll: (tenantId: string, apiKey: string) => Promise<void>;
+  isLoading: boolean;
 }
 
 export default function WorkerForm({ onSubmit, onListAll }: WorkerFormProps) {

@@ -55,6 +55,8 @@ export interface Worker {
   settings?: {
     [key: string]: any;
   };
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Source {
