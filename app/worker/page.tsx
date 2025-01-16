@@ -10,6 +10,7 @@ export default function WorkerManagement() {
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [viewMode, setViewMode] = useState<'formatted' | 'raw'>('formatted');
+  const [expandedPrompts, setExpandedPrompts] = useState<Set<string>>(new Set());
 
   const handleWorkerFetch = async (tenantId: string, workerId: string, apiKey: string) => {
     try {
@@ -51,7 +52,19 @@ export default function WorkerManagement() {
     }
   };
 
+  const togglePrompt = (workerId: string) => {
+    const newExpanded = new Set(expandedPrompts);
+    if (newExpanded.has(workerId)) {
+      newExpanded.delete(workerId);
+    } else {
+      newExpanded.add(workerId);
+    }
+    setExpandedPrompts(newExpanded);
+  };
+
   const renderFormattedWorker = (worker: Worker) => {
+    const isExpanded = expandedPrompts.has(worker.worker_id);
+
     return (
       <div className="bg-gray-800 rounded-lg p-6">
         <div className="flex justify-between items-start mb-4">
@@ -66,41 +79,49 @@ export default function WorkerManagement() {
 
         <div className="space-y-4">
           <div>
-            <h4 className="text-lg font-semibold text-purple-300 mb-2">Prompt</h4>
-            <div className="bg-gray-700/50 rounded-lg p-4">
-              {worker.prompt.split('\n').map((line, i) => {
-                // Handle different types of lines
-                if (line.startsWith('##')) {
+            <button
+              onClick={() => togglePrompt(worker.worker_id)}
+              className="flex items-center gap-2 text-lg font-semibold text-purple-300 mb-2 hover:text-purple-200"
+            >
+              <span>{isExpanded ? '▼' : '▶'}</span>
+              <span>Prompt</span>
+            </button>
+            {isExpanded && (
+              <div className="bg-gray-700/50 rounded-lg p-4">
+                {worker.prompt.split('\n').map((line, i) => {
+                  // Handle different types of lines
+                  if (line.startsWith('##')) {
+                    return (
+                      <h4 key={i} className="text-lg font-semibold text-purple-300 mt-4 mb-2">
+                        {line.replace('##', '').trim()}
+                      </h4>
+                    );
+                  }
+                  if (line.startsWith('#')) {
+                    return (
+                      <h3 key={i} className="text-xl font-semibold text-purple-300 mt-4 mb-2">
+                        {line.replace('#', '').trim()}
+                      </h3>
+                    );
+                  }
+                  if (line.startsWith('- ')) {
+                    return (
+                      <li key={i} className="ml-4 mb-1">
+                        {line.replace('- ', '')}
+                      </li>
+                    );
+                  }
+                  if (line.trim() === '') {
+                    return <div key={i} className="h-2" />;
+                  }
                   return (
-                    <h4 key={i} className="text-lg font-semibold text-purple-300 mt-4 mb-2">
-                      {line.replace('##', '').trim()}
-                    </h4>
+                    <p key={i} className="mb-2 last:mb-0">
+                      {line}
+                    </p>
                   );
-                }
-                if (line.startsWith('#')) {
-                  return (
-                    <h3 key={i} className="text-xl font-semibold text-purple-300 mt-4 mb-2">
-                      {line.replace('#', '').trim()}
-                    </h3>
-                  );
-                }
-                if (line.startsWith('- ')) {
-                  return (
-                    <li key={i} className="ml-4 mb-1">
-                      {line.replace('- ', '')}
-                    </li>
-                  );
-                }
-                if (line.trim() === '') {
-                  return <div key={i} className="h-2" />;
-                }
-                return (
-                  <p key={i} className="mb-2 last:mb-0">
-                    {line}
-                  </p>
-                );
-              })}
-            </div>
+                })}
+              </div>
+            )}
           </div>
 
           <div className="text-sm text-gray-400 space-y-1">
