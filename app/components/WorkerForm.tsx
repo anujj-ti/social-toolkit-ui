@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface WorkerFormProps {
   onSubmit: (tenantId: string, workerId: string, apiKey: string) => Promise<void>;
@@ -11,10 +11,26 @@ interface WorkerFormProps {
     output_type: 'TEXT' | 'IMAGE' | 'VIDEO' | 'AUDIO';
     prompt: string;
   }) => Promise<void>;
+  onUpdate?: (tenantId: string, workerId: string, apiKey: string, workerData: {
+    name: string;
+    description: string;
+    prompt: string;
+  }) => Promise<void>;
   isLoading: boolean;
+  editWorker?: Worker;
+  onCancelEdit?: () => void;
+  currentApiKey: string;
 }
 
-export default function WorkerForm({ onSubmit, onListAll, onCreate, isLoading }: WorkerFormProps) {
+export default function WorkerForm({ 
+  onSubmit, 
+  onListAll, 
+  onCreate, 
+  onUpdate,
+  isLoading,
+  editWorker,
+  onCancelEdit,
+}: WorkerFormProps) {
   const [tenantId, setTenantId] = useState('');
   const [workerId, setWorkerId] = useState('');
   const [apiKey, setApiKey] = useState('');
@@ -30,6 +46,18 @@ export default function WorkerForm({ onSubmit, onListAll, onCreate, isLoading }:
     output_type: 'TEXT',
     prompt: '',
   });
+
+  useEffect(() => {
+    if (editWorker) {
+      setTenantId(editWorker.tenant_id);
+      setNewWorker({
+        name: editWorker.name,
+        description: editWorker.description,
+        output_type: editWorker.output_type,
+        prompt: editWorker.prompt,
+      });
+    }
+  }, [editWorker]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,22 +82,37 @@ export default function WorkerForm({ onSubmit, onListAll, onCreate, isLoading }:
     await onCreate(tenantId, apiKey, newWorker);
   };
 
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editWorker && onUpdate) {
+      await onUpdate(editWorker.tenant_id, editWorker.worker_id, apiKey, {
+        name: newWorker.name,
+        description: newWorker.description,
+        prompt: newWorker.prompt,
+      });
+    }
+  };
+
   return (
     <div className="p-6 bg-gray-900 rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Worker Management</h2>
+      <h2 className="text-2xl font-bold mb-4">
+        {editWorker ? 'Update Worker' : 'Worker Management'}
+      </h2>
       
-      <div className="mb-4">
-        <button
-          type="button"
-          onClick={() => setIsCreating(!isCreating)}
-          className="text-sm bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-        >
-          {isCreating ? '← Back to Search' : '+ Create New Worker'}
-        </button>
-      </div>
+      {!editWorker && (
+        <div className="mb-4">
+          <button
+            type="button"
+            onClick={() => setIsCreating(!isCreating)}
+            className="text-sm bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          >
+            {isCreating ? '← Back to Search' : '+ Create New Worker'}
+          </button>
+        </div>
+      )}
 
-      {isCreating ? (
-        <form onSubmit={handleCreate} className="space-y-4">
+      {(isCreating || editWorker) ? (
+        <form onSubmit={editWorker ? handleUpdate : handleCreate} className="space-y-4">
           <div>
             <label htmlFor="tenantId" className="block text-sm font-medium mb-1">
               Tenant ID <span className="text-gray-400">(required)</span>
@@ -160,13 +203,25 @@ export default function WorkerForm({ onSubmit, onListAll, onCreate, isLoading }:
               required
             />
           </div>
-          <button
-            type="submit"
-            className="w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Creating...' : 'Create Worker'}
-          </button>
+          <div className="flex gap-4">
+            <button
+              type="submit"
+              className="flex-1 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Processing...' : editWorker ? 'Update Worker' : 'Create Worker'}
+            </button>
+            {editWorker && onCancelEdit && (
+              <button
+                type="button"
+                onClick={onCancelEdit}
+                className="flex-1 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 disabled:opacity-50"
+                disabled={isLoading}
+              >
+                Cancel
+              </button>
+            )}
+          </div>
         </form>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">

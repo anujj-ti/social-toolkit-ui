@@ -11,8 +11,11 @@ export default function WorkerManagement() {
   const [isLoading, setIsLoading] = useState(false);
   const [viewMode, setViewMode] = useState<'formatted' | 'raw'>('formatted');
   const [expandedPrompts, setExpandedPrompts] = useState<Set<string>>(new Set());
+  const [currentApiKey, setCurrentApiKey] = useState('');
+  const [editingWorker, setEditingWorker] = useState<Worker | null>(null);
 
   const handleWorkerFetch = async (tenantId: string, workerId: string, apiKey: string) => {
+    setCurrentApiKey(apiKey);
     try {
       setIsLoading(true);
       const response = await fetch(`/api/worker?tenantId=${tenantId}&workerId=${workerId}&apiKey=${apiKey}`);
@@ -33,6 +36,7 @@ export default function WorkerManagement() {
   };
 
   const handleListAll = async (tenantId: string, apiKey: string) => {
+    setCurrentApiKey(apiKey);
     try {
       setIsLoading(true);
       const response = await fetch(`/api/worker/list?tenantId=${tenantId}&apiKey=${apiKey}`);
@@ -131,6 +135,23 @@ export default function WorkerManagement() {
             <div>Updated: {new Date(worker.updated_at).toLocaleString()}</div>
           </div>
         </div>
+
+        <div className="mt-4 flex gap-2">
+          <button
+            onClick={() => handleUpdate(worker)}
+            className="flex-1 bg-blue-600 text-white px-3 py-1 text-sm rounded hover:bg-blue-700 disabled:opacity-50"
+            disabled={isLoading}
+          >
+            Update Worker
+          </button>
+          <button
+            onClick={() => handleDelete(worker)}
+            className="flex-1 bg-red-600 text-white px-3 py-1 text-sm rounded hover:bg-red-700 disabled:opacity-50"
+            disabled={isLoading}
+          >
+            Delete Worker
+          </button>
+        </div>
       </div>
     );
   };
@@ -167,6 +188,77 @@ export default function WorkerManagement() {
     }
   };
 
+  const handleDelete = async (worker: Worker) => {
+    if (!window.confirm(`Are you sure you want to delete worker "${worker.name}"?`)) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await fetch(
+        `/api/worker/delete?tenantId=${worker.tenant_id}&workerId=${worker.worker_id}&apiKey=${currentApiKey}`,
+        { method: 'DELETE' }
+      );
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete worker');
+      }
+      
+      // Remove the deleted worker from the list
+      setWorkers(workers?.filter(w => w.worker_id !== worker.worker_id) || null);
+      setError('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdate = async (worker: Worker) => {
+    setEditingWorker(worker);
+    // Scroll to top smoothly
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleUpdateSubmit = async (
+    tenantId: string, 
+    workerId: string, 
+    apiKey: string,
+    workerData: { name: string; description: string; prompt: string; }
+  ) => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/worker/update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tenantId,
+          workerId,
+          apiKey,
+          ...workerData,
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update worker');
+      }
+      
+      setWorkers(workers?.map(w => 
+        w.worker_id === workerId ? data : w
+      ) || null);
+      setError('');
+      setEditingWorker(null);  // Close edit form
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Layout>
       <div className="max-w-4xl">
@@ -177,7 +269,11 @@ export default function WorkerManagement() {
             onSubmit={handleWorkerFetch}
             onListAll={handleListAll}
             onCreate={handleCreate}
+            onUpdate={handleUpdateSubmit}
             isLoading={isLoading}
+            editWorker={editingWorker}
+            onCancelEdit={() => setEditingWorker(null)}
+            currentApiKey={currentApiKey}
           />
           
           {error && (
