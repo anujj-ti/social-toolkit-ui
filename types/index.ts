@@ -90,6 +90,7 @@ export interface Generation {
   created_at: string;
   updated_at: string;
   context?: string;
+  prompt: string;
   result?: {
     status: 'success' | 'failure';
     content: string;
