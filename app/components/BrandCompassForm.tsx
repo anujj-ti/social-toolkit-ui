@@ -80,10 +80,9 @@ export default function BrandCompassForm({ onTrigger, onFetchStatus, isLoading }
             type="button"
             onClick={handleTrigger}
             className="flex-1 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 disabled:opacity-50"
-            // disabled={isLoading || !tenantId || !brandId || !apiKey}
-            disabled={true}
+            disabled={isLoading || !tenantId || !brandId || !apiKey}
           >
-            {isLoading ? 'Loading...' : 'Trigger Compass (disabled)'}
+            {isLoading ? 'Loading...' : 'Trigger Compass'}
           </button>
           <button
             type="button"
