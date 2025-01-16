@@ -135,6 +135,38 @@ export default function WorkerManagement() {
     );
   };
 
+  const handleCreate = async (tenantId: string, apiKey: string, workerData: {
+    name: string;
+    description: string;
+    output_type: 'TEXT' | 'IMAGE' | 'VIDEO' | 'AUDIO';
+    prompt: string;
+  }) => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/worker/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ tenantId, apiKey, ...workerData }),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create worker');
+      }
+      
+      setWorkers([data]);
+      setError('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      setWorkers(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Layout>
       <div className="max-w-4xl">
@@ -144,6 +176,7 @@ export default function WorkerManagement() {
           <WorkerForm 
             onSubmit={handleWorkerFetch}
             onListAll={handleListAll}
+            onCreate={handleCreate}
             isLoading={isLoading}
           />
           
