@@ -19,9 +19,11 @@ export default function Home() {
           <ul className="space-y-2">
             <li>• Tenant Management</li>
             <li>• Brand Management</li>
+            <li>• Brand Compass</li>
             <li>• Source Management</li>
             <li>• Prompt Management</li>
             <li>• Worker Management</li>
+            <li>• Generation Management</li>
           </ul>
         </div>
       </div>

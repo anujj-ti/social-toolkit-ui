@@ -11,6 +11,7 @@ const menuItems = [
   { icon: '📄', label: 'Source Management', path: '/source' },
   { icon: '💭', label: 'Prompt Management', path: '/prompt' },
   { icon: '⚙️', label: 'Worker Management', path: '/worker' },
+  { icon: '🔄', label: 'Generation Management', path: '/generation' },
 ];
 
 export default function Sidebar() {

@@ -80,4 +80,23 @@ export interface BrandCompass {
     completed_workers: number;
     percent_complete: number;
   };
+}
+
+export interface Generation {
+  generation_id: string;
+  tenant_id: string;
+  brand_id: string;
+  worker_id: string;
+  status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+  created_at: string;
+  updated_at: string;
+  context?: string;
+  result?: {
+    status: 'success' | 'failure';
+    content: string;
+    metadata?: {
+      model: string;
+      type: string;
+    };
+  };
 } 
