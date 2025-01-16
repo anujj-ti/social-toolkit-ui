@@ -40,9 +40,9 @@ export interface Prompt {
   description: string;
   content_type: 'TEXT' | 'IMAGE' | 'VIDEO' | 'AUDIO';
   prompt_text: string;
-  settings?: {
-    [key: string]: any;
-  };
+  status: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Worker {
