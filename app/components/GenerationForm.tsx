@@ -37,6 +37,8 @@ export default function GenerationForm({ onCreate, onGet, onListAll, isLoading }
       <div className="mb-4 p-4 bg-gray-800 rounded-lg">
         <p className="text-sm text-gray-400">
           Create new generations, fetch specific generations, or list all generations for a worker.
+          <br />
+          <span className="mt-2 block">Note: Context is only needed when creating a new generation.</span>
         </p>
       </div>
       <form className="space-y-4">
@@ -112,7 +114,7 @@ export default function GenerationForm({ onCreate, onGet, onListAll, isLoading }
         </div>
         <div>
           <label htmlFor="context" className="block text-sm font-medium mb-1">
-            Context <span className="text-gray-400">(optional)</span>
+            Context <span className="text-gray-400">(required for Create Generation)</span>
           </label>
           <textarea
             id="context"
@@ -121,7 +123,7 @@ export default function GenerationForm({ onCreate, onGet, onListAll, isLoading }
             className="w-full p-2 rounded bg-gray-800 border border-gray-700 h-24"
             disabled={isLoading}
           />
-          <p className="mt-1 text-sm text-gray-400">Optional context for new generations</p>
+          <p className="mt-1 text-sm text-gray-400">Only required when creating a new generation. Not needed for Get or List operations.</p>
         </div>
         <div className="flex gap-4">
           <button
