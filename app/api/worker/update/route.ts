@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-
+import { API_BASE_URL } from '@/lib/constants';
+  
 export async function PUT(request: Request) {
   const { tenantId, workerId, apiKey, name, description, prompt } = await request.json();
 
@@ -12,7 +13,7 @@ export async function PUT(request: Request) {
 
   try {
     const response = await fetch(
-      `https://social-toolkit.ti.trilogy.com/tenant/${tenantId}/worker/${workerId}`,
+      `${API_BASE_URL}/tenant/${tenantId}/worker/${workerId}`,
       {
         method: 'PUT',
         headers: {

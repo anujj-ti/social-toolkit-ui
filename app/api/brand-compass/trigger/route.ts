@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { API_BASE_URL } from '@/lib/constants';
 
 export async function POST(request: Request) {
   const { tenantId, brandId, apiKey } = await request.json();
@@ -12,7 +13,7 @@ export async function POST(request: Request) {
 
   try {
     const response = await fetch(
-      `https://social-toolkit.ti.trilogy.com/tenant/${tenantId}/brand/${brandId}/compass/trigger`,
+      `${API_BASE_URL}/tenant/${tenantId}/brand/${brandId}/compass/trigger`,
       {
         method: 'POST',
         headers: {

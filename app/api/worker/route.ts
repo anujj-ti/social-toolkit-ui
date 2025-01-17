@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-
+import { API_BASE_URL } from '@/lib/constants';
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const tenantId = searchParams.get('tenantId');
@@ -15,7 +15,7 @@ export async function GET(request: Request) {
 
   try {
     const response = await fetch(
-      `https://social-toolkit.ti.trilogy.com/tenant/${tenantId}/worker/${workerId}`,
+      `${API_BASE_URL}/tenant/${tenantId}/worker/${workerId}`,
       {
         headers: {
           Authorization: `Bearer ${apiKey}`,
