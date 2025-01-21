@@ -117,40 +117,48 @@ export default function SourceManagement() {
                       <div key={promptId} className="bg-gray-700/50 rounded-lg p-4">
                         <h4 className="font-medium text-purple-300 mb-2">Prompt Id: {promptId}</h4>
                         <div className="whitespace-pre-wrap">
-                          {result.analysis.split('\n').map((line, i) => {
-                            if (line.startsWith('##')) {
+                          {result.status === 'error' ? (
+                            <div className="text-red-400">
+                              Error: {result.error}
+                            </div>
+                          ) : (
+                            result.analysis?.split('\n').map((line, i) => {
+                              if (line.startsWith('##')) {
+                                return (
+                                  <h4 key={i} className="text-lg font-semibold text-purple-300 mt-4 mb-2">
+                                    {line.replace('##', '').trim()}
+                                  </h4>
+                                );
+                              }
+                              if (line.startsWith('#')) {
+                                return (
+                                  <h3 key={i} className="text-xl font-semibold text-purple-300 mt-4 mb-2">
+                                    {line.replace('#', '').trim()}
+                                  </h3>
+                                );
+                              }
+                              if (line.startsWith('- ')) {
+                                return (
+                                  <li key={i} className="ml-4 mb-1">
+                                    {line.replace('- ', '')}
+                                  </li>
+                                );
+                              }
+                              if (line.trim() === '') {
+                                return <div key={i} className="h-2" />;
+                              }
                               return (
-                                <h4 key={i} className="text-lg font-semibold text-purple-300 mt-4 mb-2">
-                                  {line.replace('##', '').trim()}
-                                </h4>
+                                <p key={i} className="mb-2 last:mb-0">
+                                  {line}
+                                </p>
                               );
-                            }
-                            if (line.startsWith('#')) {
-                              return (
-                                <h3 key={i} className="text-xl font-semibold text-purple-300 mt-4 mb-2">
-                                  {line.replace('#', '').trim()}
-                                </h3>
-                              );
-                            }
-                            if (line.startsWith('- ')) {
-                              return (
-                                <li key={i} className="ml-4 mb-1">
-                                  {line.replace('- ', '')}
-                                </li>
-                              );
-                            }
-                            if (line.trim() === '') {
-                              return <div key={i} className="h-2" />;
-                            }
-                            return (
-                              <p key={i} className="mb-2 last:mb-0">
-                                {line}
-                              </p>
-                            );
-                          })}
+                            })
+                          )}
                         </div>
                         <div className="mt-2 text-sm text-gray-400">
-                          Status: {result.status}
+                          Status: <span className={result.status === 'error' ? 'text-red-400' : 'text-green-400'}>
+                            {result.status}
+                          </span>
                         </div>
                       </div>
                     ))}

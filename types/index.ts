@@ -67,6 +67,14 @@ export interface Source {
   status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
   url?: string;
   text?: string;
+  num_analysis_prompts_triggered?: number;
+  analysis_results?: {
+    [key: string]: {
+      analysis?: string;
+      error?: string;
+      status: string;
+    };
+  };
 }
 
 export interface BrandCompass {
